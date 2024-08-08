@@ -1,0 +1,281 @@
+[
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_batchCode",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "_owner",
+				"type": "address"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "transactionHash",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "currentCustodian",
+				"type": "address"
+			}
+		],
+		"name": "BatchTransferred",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "newCustodian",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "transactionHash",
+				"type": "string"
+			}
+		],
+		"name": "CustodyTransferred",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "sender",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "receiver",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "timestamp",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "previousTr",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "currentTr",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "batchCode",
+				"type": "uint256"
+			}
+		],
+		"name": "TransactionAdded",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "allTransactions",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "sender",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "receiver",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "timestamp",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "previousTr",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "currentTr",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "batchCode",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getAllTransactions",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "address",
+						"name": "sender",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "receiver",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "previousTr",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "currentTr",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "batchCode",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct TransactionUpdate.Transaction[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "owner",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "transactionCount",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"name": "transactionData",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "sender",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "receiver",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "timestamp",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "previousTr",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "currentTr",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "batchCode",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newCustodian",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "inputHashOrBatchCode",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "previousTransactionHash",
+				"type": "string"
+			}
+		],
+		"name": "transferCustodyString",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}
+]
