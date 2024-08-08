@@ -14,7 +14,7 @@ function App() {
         </ProtectedRoute>}/>
         <Route path="/login" element={ <Login/>}/>
         <Route path="/signup" element={ <Signup/>}/>
-         <Route path='analytics' element={<Analytics/>}/>
+         <Route path='/analytics' element={<Analytics/>}/>
         </Routes>
      </div>
   
