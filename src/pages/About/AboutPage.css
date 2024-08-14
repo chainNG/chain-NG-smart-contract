@@ -1,0 +1,580 @@
+/* start of desktop styles */
+.about-container {
+  font-family: 'Outfit', sans-serif;
+  color: #000E29;
+}
+
+.hero-bg1 {
+  position: relative;
+  width: 100%;
+  height: 556px;
+  background: linear-gradient(0deg, rgba(0, 14, 41, 0.82), rgba(0, 14, 41, 0.82)), url('../../assets/heroabout.png');
+  background-size: cover;
+  background-position: center;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-content1 {
+  z-index: 1;
+}
+
+.hero-title {
+  font-weight: 700;
+  font-size: 76px;
+  color: #FFFFFF;
+}
+
+.hero-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #fff;
+}
+
+.image-container {
+  width: 50%;
+  max-width: 400px;
+  padding: 20px;
+  box-sizing: border-box;
+  position: relative;
+  top: -150px; /* Adjust the image position to intercept the hero section */
+}
+
+.image-1 {
+  width: 100%;
+  height: auto;
+  border-radius: 11px;
+  border: 7px solid #000E29;
+}
+
+.text-container {
+  width: 100%;
+  max-width: 780px;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.hero-subtitle {
+  font-weight: 700;
+  font-size: 40px;
+  margin-bottom: 20px;
+}
+
+.hero-description {
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  text-align: justify; 
+  max-width: 1000px; 
+}
+
+.view-more-button {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #FF6600;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: none;
+  margin-top: 10px;
+}
+
+.what-we-do {
+  text-align: left;
+  padding: 70px 0; /* Increase padding for height */
+  background-color: #F5F5F5;
+}
+
+.section-title {
+  font-weight: 700;
+  font-size: 40px;
+}
+
+.section-description {
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.mission-vision {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #000E29;
+  color: #FFFFFF;
+  padding: 70px 0; /* Increase padding for height */
+}
+
+.mission-statement h2 {
+  font-weight: 750;
+  font-size: 40px;
+  margin-bottom: 40px;
+  margin-left: 70px;
+}
+
+.vision-statement h2 {
+  font-weight: 750;
+  font-size: 40px;
+  margin-bottom: 40px;
+  margin-left: -100px;
+}
+
+.sub {
+  font-weight: 400;
+  font-size: 16px;
+  margin-left: -1px;
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+.sub1 h6 {
+  font-weight: 400;
+  font-size: 16px;
+  margin-left: -100px;
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+.mission-statement p {
+  font-weight: 400;
+  font-size: 16px;
+  margin-left: 70px;
+  line-height: 1.5;
+}
+
+.vision-statement p {
+  font-weight: 400;
+  font-size: 16px;
+  margin-bottom: -1000px;
+  margin-left: -100px;
+  line-height: 1.5;
+}
+
+.mission-statement img {
+  width: 45%;
+  margin-left: 100px;
+  margin-top: 100px;
+  float: left;
+}
+
+.our-history {
+  text-align: left;
+  padding: 50px 0; /* Increase padding for height */
+  background: linear-gradient(rgba(0, 14, 41, 0.68), rgba(252, 113, 0, 0.68)), url('../../assets/rect43.png');
+  background-size: cover;
+  background-position: center;
+  color: #FFFFFF;
+}
+
+.history-title {
+  font-weight: 750;
+  font-size: 40px;
+  margin-left: 100px;
+  text-transform: uppercase;
+  color: #FF6600;
+}
+
+.timeline {
+  display: flex;
+  justify-content: space-around;
+}
+
+.timeline-item {
+  text-align: center;
+}
+
+.timeline-item .year1 {
+  font-weight: 700;
+  font-size: 100px;
+  margin-bottom: 10px;
+  margin-left: 20px;
+  text-justify: auto;
+}
+
+.timeline-item .year2 {
+  font-weight: 700;
+  font-size: 100px;
+  margin-top: -300px;
+  margin-right: -200px;
+}
+
+.timeline-item .year {
+  font-weight: 700;
+  font-size: 100px;
+  margin-bottom: 10px;
+  margin-left: 20px;
+}
+
+.timeline-item .yearfound1 {
+  font-weight: 800;
+  font-size: 21px;
+  margin-bottom: 300px;
+  margin-top: -250px;
+  margin-right: -100px;
+  line-height: 1.5;
+}
+
+.timeline-item .yearfound2 {
+  font-weight: 800;
+  font-size: 21px;
+  line-height: 1.5;
+}
+
+.timeline-item .under {
+  font-weight: 400;
+  font-size: 16.5px;
+  line-height: 1.5;
+  margin-left: 50px;
+}
+
+.timeline-item .under1 {
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 1.5;
+  text-align: center;
+  margin-left: 150px;
+}
+
+.timeline-item .under2 {
+  font-weight: 400;
+  font-size: 18px;
+}
+
+.safe-environments {
+  text-align: left;
+  padding: 70px 0; /* Increase padding for height */
+  background-color: #000E29; /* Same color as mission container */
+}
+
+.safe-content {
+  display: flex;
+  align-items: center;
+}
+
+.safe-text {
+  width: 50%;
+  max-width: 600px;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.safe-text h4 {
+  font-size: 50px;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.safe-text p {
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.5;
+  margin-bottom: 50px;
+  margin-top: 40px;
+  color: #FFFFFF;
+}
+
+.safe-image-container {
+  width: 50%;
+  display: flex;
+  justify-content: flex-end;
+  position: relative;
+}
+
+.circle-container {
+  width: 404px; /* Increased size for larger images */
+  height: 404px;
+  position: relative;
+  left: 1px;
+  border-radius: 50%;
+  background-color: #fff;
+  box-shadow: 1 4px 8px rgb(0, 0, 0);
+}
+
+.floating-image {
+  width: 378px; /* Increased size for floating images */
+  height: 329px;
+  border-radius: 50%;
+  box-shadow: inset -20px -4px 8px rgba(0, 0, 0, 0.1);
+  position: absolute;
+  animation: floatAnimation 3s infinite ease-in-out alternate;
+}
+
+.floating-image:nth-child(1) {
+  top: 20%;
+  left: -10%;
+}
+
+.floating-image:nth-child(2) {
+  bottom: 20%;
+  right: -10%;
+}
+
+@keyframes floatAnimation {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.top-management {
+  text-align: left;
+  padding: 70px 0; /* Increase padding for height */
+  background-color: #FFFFFF;
+}
+
+.management-title {
+  font-weight: 800;
+  font-size: 40px;
+  margin-left: 40px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  color: #FF6600;
+}
+
+.management-profiles {
+  display: flex;
+  justify-content: space-around;
+}
+
+.profile {
+  text-align: center;
+  width: 30%;
+  max-width: 300px;
+}
+.profile h6 {
+  font-weight: 700;
+  font-size: 15px;
+  margin-left: 100px;
+  justify-content: center;
+  color: #FF6600;
+}
+
+.profile p {
+  font-weight: 400;
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+.profile img {
+  width: 100%;
+  border-radius: 50%;
+  border: 7px solid #000E29;
+}
+
+.social-links {
+  margin-top: 10px;
+}
+
+.social-links a {
+  display: inline-block;
+  margin: 0 10px;
+  color: #FF6600;
+  font-size: 20px;
+}
+
+/* start of large tablet styles */
+@media screen and (max-width: 991px) {
+  .hero-title {
+    font-size: 60px;
+  }
+
+  .hero-subtitle {
+    font-size: 30px;
+  }
+
+  .hero-description {
+    font-size: 15px;
+  }
+
+  .image-container {
+    width: 100%;
+    max-width: 350px;
+  }
+
+  .text-container {
+    width: 100%;
+    padding: 15px;
+  }
+
+  .safe-text h4 {
+    font-size: 45px;
+  }
+
+  .profile {
+    width: 45%;
+  }
+
+  .management-profiles {
+    flex-wrap: wrap;
+  }
+
+  .mission-statement img {
+    width: 80%;
+    margin-left: 50px;
+    margin-top: 70px;
+  }
+
+  .timeline-item .year1, .timeline-item .year2 {
+    font-size: 80px;
+  }
+
+  .timeline-item .under1, .timeline-item .under2 {
+    font-size: 16px;
+  }
+}
+
+/* start of medium tablet styles */
+@media screen and (max-width: 767px) {
+  .hero-title {
+    font-size: 50px;
+  }
+
+  .hero-subtitle {
+    font-size: 25px;
+  }
+
+  .hero-description {
+    font-size: 14px;
+  }
+
+  .image-container {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .text-container {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .safe-text h4 {
+    font-size: 40px;
+  }
+
+  .profile {
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 20px;
+  }
+
+  .management-profiles {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .mission-statement img {
+    width: 70%;
+    margin-left: 30px;
+    margin-top: 50px;
+  }
+
+  .timeline-item .year1, .timeline-item .year2 {
+    font-size: 70px;
+  }
+
+  .timeline-item .under1, .timeline-item .under2 {
+    font-size: 14px;
+  }
+}
+
+/* start of phone styles */
+@media screen and (max-width: 479px) {
+  .hero-title {
+    font-size: 40px;
+  }
+
+  .hero-subtitle {
+    font-size: 20px;
+  }
+
+  .hero-description {
+    font-size: 14px;
+  }
+
+  .image-container {
+    width: 100%;
+    max-width: 250px;
+  }
+
+  .hero-body {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .text-container {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .safe-content {
+    flex-direction: column;
+  }
+
+  .safe-text {
+    width: 100%;
+  }
+
+  .safe-image-container {
+    width: 100%;
+    justify-content: center;
+    margin-top: 20px;
+  }
+
+  .circle-container {
+    width: 200px;
+    height: 200px;
+  }
+
+  .floating-image {
+    width: 180px;
+    height: 150px;
+  }
+
+  .management-profiles {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .profile {
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 20px;
+  }
+
+  .mission-statement img {
+    width: 60%;
+    margin-left: 20px;
+    margin-top: 40px;
+  }
+
+  .mission-vision, .our-history, .safe-environments {
+    padding: 50px 0;
+  }
+
+  .mission-statement h2 {
+    font-weight: 750;
+    font-size: 40px;
+    margin-bottom: 40px;
+    margin-left: 70px;
+  }
+  
+  .section-title, .history-title, .management-title {
+    font-size: 28px;
+  }
+
+  .section-description, .mission-statement p, .vision-statement p, .timeline-item p, .safe-text p, .profile p {
+    font-size: 14px;
+  }
+}
