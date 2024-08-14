@@ -1,0 +1,132 @@
+.quarry-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  margin-bottom: 40px;
+  background-color: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  height: 770px;
+  width: 1322px;
+}
+
+.quarry-images {
+  position: relative;
+  width: 255px;
+  height: 681px;
+  margin-right: 40px; /* Gap between images and text */
+}
+
+.quarry-image {
+  position: absolute;
+  width: 255px;
+  height: 681px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: transform 0.3s ease;
+}
+
+.quarry-image.image1 {
+  background-image: url('../../assets/rect51.png');
+  top: 100px;
+  left: 25px;
+}
+
+.quarry-image.image2 {
+  background-image: url('../../assets/rect50.png'); /* Updated image path */
+  top: 0;
+  left: -250px;
+}
+
+.quarry-image:hover {
+  transform: scale(1.05);
+}
+
+.quarry-text {
+  flex: 1;
+  padding-right: 400px; /* Adjusted for proper spacing */
+  text-align: left;
+}
+
+.quarry-text h1 {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: 50px;
+  color: #FF6600;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.quarry-text p {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  color: #000E29;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.view-more-button {
+  padding: 10px 20px;
+  background-color: #FF6600;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  transition: background-color 0.3s ease;
+}
+
+.view-more-button:hover {
+  background-color: #e55d00;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .quarry-container {
+    flex-direction: column;
+    height: auto;
+    width: 100%;
+    padding: 10px;
+  }
+
+  .quarry-images {
+    width: 375px;
+    height: 302px;
+    margin: 0 auto 20px auto;
+  }
+
+  .quarry-image {
+    width: 375px;
+    height: 302px;
+  }
+
+  .quarry-image.image1,
+  .quarry-image.image2 {
+    top: 0;
+    left: 0;
+  }
+
+  .quarry-text {
+    padding-right: 0;
+    text-align: center;
+  }
+
+  .quarry-text h1 {
+    font-size: 24px;
+  }
+
+  .quarry-text p {
+    font-size: 14px;
+  }
+
+  .view-more-button {
+    font-size: 14px;
+  }
+}
