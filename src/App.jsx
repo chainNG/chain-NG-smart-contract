@@ -1,4 +1,5 @@
-
+import "./index.css";
+import "./App.css";
 import ProtectedRoute from "./Reusables/ProtectedRoute"
 import { Home,
         Login,
