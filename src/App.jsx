@@ -13,8 +13,8 @@ function App() {
 
   return (
     
-     <div>
-      <Routes>
+    <div className="flex    items-center justify-center w-full h-screen ">
+            <Routes>
         <Route path='/' element={<ProtectedRoute>
           <Home/>
         </ProtectedRoute>}/>
