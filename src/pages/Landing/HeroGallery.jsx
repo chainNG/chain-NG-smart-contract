@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import TextFade from "../../components/CustomTexts/TextFade";
 import { GalleryTileA, GalleryTileF } from "../../components/Tiles/GalleryTile";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import Slider from "react-slick";
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+import Slider from 'react-slick';
 
 const HeroGallery = () => {
   const [isSmallScreen, setIsSmallScreen] = useState(false);

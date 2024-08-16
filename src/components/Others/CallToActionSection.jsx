@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import IMGACT from "../../assets/act.png";
 import TextFade from "../CustomTexts/TextFade";
 import Button from "../Buttons/Button";

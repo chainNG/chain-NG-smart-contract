@@ -1,5 +1,5 @@
-import { LoadingAnimation } from "../../assets/RenderedAssets";
-import { Link } from "react-router-dom";
+import { LoadingAnimation } from '../../assets/RenderedAssets';
+import { Link } from 'react-router-dom';
 
 const Button = ({
   value,

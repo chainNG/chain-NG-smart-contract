@@ -1,7 +1,7 @@
-import React from "react";
-import "./ContactPage.css";
-import emailIcon from "../../assets/mail.svg";
-import phoneIcon from "../../assets/phoneIcon.png";
+import React from 'react';
+import './ContactPage.css';
+import emailIcon from '../../assets/mail.svg';
+import phoneIcon from '../../assets/phoneIcon.png';
 import addressIcon from "../../assets/officeIcon.png";
 import TextFade from "../../components/CustomTexts/TextFade";
 import Button from "../../components/Buttons/Button";

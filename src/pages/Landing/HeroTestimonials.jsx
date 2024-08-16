@@ -1,13 +1,13 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import TextFade from "../../components/CustomTexts/TextFade";
 import STARS from "../../assets/stars.svg";
 import NEXT from "../../assets/next.svg";
 import PREV from "../../assets/prev.svg";
-import { Swiper, SwiperSlide } from "swiper/react";
+import { Swiper, SwiperSlide } from 'swiper/react';
 
-import "swiper/css";
-import "swiper/css/pagination";
-import { Navigation, Autoplay } from "swiper/modules";
+import 'swiper/css';
+import 'swiper/css/pagination';
+import { Navigation, Autoplay } from 'swiper/modules';
 import { Testimonials } from "../../lib/constants";
 
 const HeroTestimonials = () => {

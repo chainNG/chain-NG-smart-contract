@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import TextFade from "../../components/CustomTexts/TextFade";
 import { WhatsNewItemData } from "../../lib/constants";
 import WhatsNewItem from "../../components/Tiles/WhatsNewItem";
