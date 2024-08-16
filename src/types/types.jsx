@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from 'react';
 import LOGO from "../../assets/logo.svg";
 import { NavBurger, NavClose } from "../../assets/RenderedAssets";
-import { Link } from "react-router-dom";
-import { NavItem } from "./NavItems";
+import { Link } from 'react-router-dom';
+import { NavItem } from './NavItems';
 import { NavItems } from "../../lib/constants";
 
 const SideNav = () => {

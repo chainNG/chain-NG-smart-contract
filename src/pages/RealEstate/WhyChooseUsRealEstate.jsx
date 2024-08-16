@@ -1,6 +1,5 @@
-import React from "react";
+import React from 'react';
 import { WhyChooseUsRealEstateData } from "../../lib/constants";
-import { WhyChooseUsEstateItem } from "../../types";
 import TextFade from "../../components/CustomTexts/TextFade";
 import WhyChooseUsEstateTile from "../../components/Tiles/WhyChooseUsEstateTile";
 import Button from "../../components/Buttons/Button";
@@ -15,7 +14,7 @@ const WhyChooseUsRealEstate = () => {
       </TextFade>
       <div className="w-full grid md:grid-cols-3 grid-cols-1 gap-28 my-28 ">
         {WhyChooseUsRealEstateData.items.map(
-          (item: WhyChooseUsEstateItem, index) => (
+          (item, index) => (
             <WhyChooseUsEstateTile
               icon={item.icon}
               title={item.title}
@@ -32,3 +31,4 @@ const WhyChooseUsRealEstate = () => {
 };
 
 export default WhyChooseUsRealEstate;
+

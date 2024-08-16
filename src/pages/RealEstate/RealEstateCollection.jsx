@@ -1,10 +1,9 @@
-import React from "react";
+import React from 'react';
 import TextFade from "../../components/CustomTexts/TextFade";
 import CollectionTile from "../../components/Tiles/CollectionTile";
 import { CollectionData } from "../../lib/constants";
-import { CollectionTileItem } from "../../types";
 
-const RealEstateCollection = ({ id }: { id: string }) => {
+const RealEstateCollection = ({ id }) => {
   return (
     <div id={id} className="w-full px-[5%] py-20">
       <TextFade animation="fade-down">
@@ -14,7 +13,7 @@ const RealEstateCollection = ({ id }: { id: string }) => {
       </TextFade>
       <div className="w-full grid md:grid-cols-3 grid-cols-1 gap-28 my-28 ">
         {" "}
-        {CollectionData.items.map((item: CollectionTileItem, index) => (
+        {CollectionData.items.map((item, index) => (
           <CollectionTile
             key={index}
             image={item.image}
@@ -30,3 +29,4 @@ const RealEstateCollection = ({ id }: { id: string }) => {
 };
 
 export default RealEstateCollection;
+

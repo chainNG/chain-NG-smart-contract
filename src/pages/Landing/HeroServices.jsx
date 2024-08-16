@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import TextFade from "../../components/CustomTexts/TextFade";
 import HeroServiceItem from "../../components/Tiles/HeroServiceItem";
 import { HeroServiceItemData } from "../../lib/constants";

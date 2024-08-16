@@ -1,12 +1,12 @@
-import React from "react";
-import "./AboutPage.css";
-import heroImage from "../../assets/heroabout.png";
-import sandDredgingImage from "../../assets/rect41.png";
-import missionImage from "../../assets/logo.svg";
-import safetyImage1 from "../../assets/rect40.svg";
-// import managementImage1 from "../../assets/rect28.png";
-// import managementImage2 from "../../assets/rect37.png";
-import managementImage3 from "../../assets/Rectangle 47.png";
+import React from 'react';
+import './AboutPage.css';
+import heroImage from '../../assets/heroabout.png';
+import sandDredgingImage from '../../assets/rect41.png';
+import missionImage from '../../assets/logo.svg';
+import safetyImage1 from '../../assets/rect40.svg';
+// import managementImage1 from '../../assets/rect28.png';
+// import managementImage2 from '../../assets/rect37.png';
+import managementImage3 from '../../assets/Rectangle 47.png';
 import TextFade from "../../components/CustomTexts/TextFade";
 
 const AboutPage = () => {
