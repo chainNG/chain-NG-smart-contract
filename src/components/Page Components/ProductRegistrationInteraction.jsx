@@ -11,8 +11,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z, string } from 'zod';
 import { useForm } from 'react-hook-form';
 import Web3 from 'web3';
-import { supabase } from '../../utils/supabaseClient'; // Supabase client
-import jsQR from "jsqr"; // For QR Code parsing
+import { supabase } from '../../utils/supabaseClient';
+import jsQR from "jsqr"; 
+import { QrReader } from 'react-qr-reader'; 
+
 
 const productSchema = z.object({
   product_code: string().length(13, { message: 'Product Code must be exactly 13 digits' }),
@@ -27,37 +29,71 @@ const ProductRegistrationInteraction = () => {
   const [txHash, setTxHash] = useState(null);
   const [web3, setWeb3] = useState(null);
   const [connectedAccount, setConnectedAccount] = useState(null);
-  const [qrData, setQrData] = useState(null); // For QR data
-  const [productDetails, setProductDetails] = useState(null); // For searched product details
-  const [loading, setLoading] = useState(false); // Loading state for async tasks
+  const [qrData, setQrData] = useState(null); 
+  const [productDetails, setProductDetails] = useState(null);
+  const [loading, setLoading] = useState(false); 
+  const [scannedQrHash, setScannedQrHash] = useState(null); 
+  const [errorMessage, setErrorMessage] = useState(null); 
 
   const { register, handleSubmit, formState, setValue, getValues } = useForm({
     resolver: zodResolver(productSchema),
   });
   const { errors } = formState;
 
+  
   useEffect(() => {
     if (typeof window.ethereum !== 'undefined') {
       setWeb3(new Web3(window.ethereum));
     }
   }, []);
 
-  // Handle connection to Metamask
+  
+  const checkContractAddress = async () => {
+    if (!import.meta.env.VITE_CONTRACT_ADDRESS) {
+      toast('Contract address is missing. Please set the contract address in the environment.', { duration: 5000 });
+      return false;
+    }
+    return true;
+  };
+
+  
   const connectWallet = async () => {
+    if (!await checkContractAddress()) return;
+
     try {
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
       setConnectedAccount(accounts[0]);
       setAccount(accounts[0]);
       const contractInstance = new web3.eth.Contract(contractABI, import.meta.env.VITE_CONTRACT_ADDRESS);
       setContract(contractInstance);
-      toast('Connected to Metamask', { duration: 4000 });
+      toast('Connected to MetaMask', { duration: 4000 });
     } catch (error) {
-      toast('Failed to connect Metamask', { duration: 4000 });
-      console.error('Metamask connection error:', error);
+      toast('Failed to connect MetaMask', { duration: 4000 });
+      console.error('MetaMask connection error:', error);
     }
   };
 
-  // Handle QR image upload and extract contract address
+  
+  const disconnectWallet = () => {
+    setConnectedAccount(null);
+    setAccount(null);
+    setContract(null);
+    toast('Wallet disconnected', { duration: 4000 });
+  };
+
+  
+  const handleQrScan = async (data) => {
+    if (data) {
+      setScannedQrHash(data);
+      validateQrAndBlockchain(data);
+    }
+  };
+
+  const handleError = (err) => {
+    console.error('QR Reader Error: ', err);
+  };
+
+  
   const handleQrCodeUpload = async (file) => {
     const reader = new FileReader();
     reader.onload = async (event) => {
@@ -75,10 +111,8 @@ const ProductRegistrationInteraction = () => {
           const qrCode = jsQR(ctx.getImageData(0, 0, canvas.width, canvas.height).data, canvas.width, canvas.height);
           if (qrCode) {
             const jsonData = JSON.parse(qrCode.data);
-            const { contractAddress } = jsonData;
-            setQrData(contractAddress);
-            toast('QR code loaded and contract address extracted', { duration: 4000 });
-            validateContractWithBlockchain(contractAddress);
+            const { qrHash } = jsonData;
+            validateQrAndBlockchain(qrHash);
           } else {
             toast('QR code not detected', { duration: 4000 });
           }
@@ -91,91 +125,83 @@ const ProductRegistrationInteraction = () => {
     reader.readAsDataURL(file);
   };
 
-  // Validate contract and send transaction to blockchain
-  const validateContractWithBlockchain = async (contractAddress) => {
+  
+  const validateQrAndBlockchain = async (qrHash) => {
     if (!connectedAccount || !contract) {
       toast('Please connect your wallet first', { duration: 4000 });
       return;
     }
 
-    try {
-      const transactionParams = {
-        from: connectedAccount,
-        to: contractAddress,
-        value: web3.utils.toWei('0.01', 'ether'), // Gas fee
-        data: contract.methods.validateContract().encodeABI(), // Assuming validateContract() is the function
-      };
-
-      const tx = await window.ethereum.request({
-        method: 'eth_sendTransaction',
-        params: [transactionParams],
-      });
-
-      setTxHash(tx);
-      toast('Transaction sent. Waiting for confirmation...', { duration: 4000 });
-      
-      setTimeout(async () => {
-        retrieveProductDetails(tx);
-      }, 5000);
-
-    } catch (error) {
-      console.error('Transaction error:', error);
-      toast('Transaction failed', { duration: 4000 });
-    }
-  };
-
-  // Retrieve product details from the blockchain
-  const retrieveProductDetails = async (txHash) => {
-    try {
-      const receipt = await web3.eth.getTransactionReceipt(txHash);
-      if (receipt && receipt.status) {
-        const contractAddress = receipt.to; // Extract the contract address from the receipt
-        const productDetails = await contract.methods.getProductDetails(contractAddress).call(); // Simplified for example
-        setProductDetails(productDetails);
-        toast('Product details retrieved successfully', { duration: 4000 });
-      } else {
-        toast('Failed to retrieve product details', { duration: 4000 });
-      }
-    } catch (error) {
-      console.error('Error retrieving product details:', error);
-      toast('Error fetching product details', { duration: 4000 });
-    }
-  };
-
-  // Search product functionality after registration or QR upload
-  const handleSearchProduct = async (code) => {
     setLoading(true);
     try {
-      const { data: product, error } = await supabase
-        .from('products')
-        .select('*')
-        .eq('product_code', code);
+      const isRegistered = await contract.methods.isQrRegistered(qrHash).call();
 
-      if (error || !product.length) {
-        toast('Product not found in Supabase', { duration: 4000 });
-        setLoading(false);
-        return;
+      if (isRegistered) {
+        
+        const blockchainProduct = await contract.methods.getProductDetails(qrHash).call();
+        const { data: product, error } = await supabase
+          .from('products')
+          .select('*')
+          .eq('qr_hash', qrHash);
+        
+        if (error || !product.length) {
+          setErrorMessage('Product not found in Supabase');
+          setProductDetails(blockchainProduct);
+        } else {
+          setProductDetails({ ...product[0], ...blockchainProduct });
+        }
+      } else {
+        
+        const tx = await contract.methods.registerProduct(qrHash).send({
+          from: connectedAccount,
+          value: web3.utils.toWei('0.01', 'ether'), 
+        });
+        setTxHash(tx.transactionHash);
+
+        
+        const { error } = await supabase
+          .from('products')
+          .insert([{ qr_hash: qrHash, transaction_hash: tx.transactionHash }]);
+
+        if (error) {
+          toast('Error storing product in Supabase', { duration: 4000 });
+        } else {
+          toast('Product registered successfully', { duration: 4000 });
+        }
       }
-
-      // Fetch from blockchain
-      const blockchainDetails = await contract.methods.getProductDetails(code).call();
-      setProductDetails({ ...product[0], ...blockchainDetails });
-
-      toast('Product details found', { duration: 4000 });
     } catch (error) {
-      console.error('Error searching product:', error);
-      toast('Failed to search product', { duration: 4000 });
+      console.error('Blockchain validation error:', error);
+      toast('Blockchain validation failed', { duration: 4000 });
     }
     setLoading(false);
   };
 
-  // Submit handler
-  const onSubmit = (data) => {
-    connectWallet().then(() => validateContractWithBlockchain(qrData || data.contractAddress));
+  const onSubmit = async (data) => {
+    if (!scannedQrHash) {
+      toast('Please scan or upload a QR code', { duration: 4000 });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      connectWallet().then(() => validateQrAndBlockchain(scannedQrHash));
+    } catch (error) {
+      toast('Error submitting product details', { duration: 4000 });
+    }
+    setLoading(false);
   };
 
   return (
     <div className="w-full flex flex-col items-center justify-center py-8 px-4">
+      {!connectedAccount ? (
+        <Button onClick={connectWallet}>Connect Wallet</Button>
+      ) : (
+        <div className="flex gap-3">
+          <Button onClick={disconnectWallet}>Disconnect Wallet</Button>
+          <Button onClick={connectWallet}>Reconnect Wallet</Button>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-4xl">
         <Card>
           <CardHeader>
@@ -185,48 +211,65 @@ const ProductRegistrationInteraction = () => {
 
           <CardContent className="space-y-2 font-light">
             <div className="space-y-1 font-jakarta">
-              <Label className='flex flex-col gap-3' htmlFor="product-code">Product Code (13 digits)
-                <Input className='font-light' {...register('product_code')} placeholder="Enter product code" />
-                <div className='text-red-500'>{errors.product_code?.message}</div>
-              </Label>
+              <Label htmlFor="product_code">Product Code</Label>
+              <Input
+                id="product_code"
+                placeholder="Enter product code (13 digits)"
+                type="number"
+                {...register('product_code')}
+              />
+              {errors.product_code && <span className="text-red-500">{errors.product_code.message}</span>}
             </div>
 
             <div className="space-y-1 font-jakarta">
-              <Label className='flex flex-col gap-3' htmlFor="product-name">Product Name
-                <Input className='font-light' {...register('product_name')} placeholder="Enter product name" />
-                <div className='text-red-500'>{errors.product_name?.message}</div>
-              </Label>
+              <Label htmlFor="product_name">Product Name</Label>
+              <Input
+                id="product_name"
+                placeholder="Enter product name"
+                {...register('product_name')}
+              />
+              {errors.product_name && <span className="text-red-500">{errors.product_name.message}</span>}
             </div>
 
             <div className="space-y-1 font-jakarta">
-              <Label className='flex flex-col gap-3' htmlFor="raw-materials">Raw Materials
-                <Input className='font-light' {...register('raw_materials')} placeholder="Enter raw materials used" />
-                <div className='text-red-500'>{errors.raw_materials?.message}</div>
-              </Label>
+              <Label htmlFor="raw_materials">Raw Materials</Label>
+              <Input
+                id="raw_materials"
+                placeholder="Enter raw materials"
+                {...register('raw_materials')}
+              />
+              {errors.raw_materials && <span className="text-red-500">{errors.raw_materials.message}</span>}
             </div>
 
             <div className="space-y-1 font-jakarta">
-              <Label className='flex flex-col gap-3' htmlFor="qr-upload">Upload QR Code
-                <Input type="file" accept="image/*" onChange={(e) => handleQrCodeUpload(e.target.files[0])} />
-              </Label>
-            </div>
-
-            <div className="space-y-1 font-jakarta">
-              <Label className='flex flex-col gap-3' htmlFor="contract-address">Contract Address (if QR code not used)
-                <Input className='font-light' {...register('contractAddress')} placeholder="Enter contract address" />
-                <div className='text-red-500'>{errors.contractAddress?.message}</div>
-              </Label>
+              <Label htmlFor="product_qr">Upload Product QR Code</Label>
+              <Input
+                id="product_qr"
+                type="file"
+                onChange={(e) => handleQrCodeUpload(e.target.files[0])}
+              />
             </div>
           </CardContent>
 
-          <CardFooter>
-            <Button type="submit" className='w-full'>Submit</Button>
+          <CardFooter className="flex flex-col space-y-2">
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? 'Registering Product...' : 'Submit'}
+            </Button>
           </CardFooter>
         </Card>
       </form>
 
-      {loading && <p className="mt-4">Loading...</p>}
-      {productDetails && <DisplayProductData productDetails={productDetails} />}
+      <div className="w-full max-w-4xl py-6 flex justify-center">
+        <QrReader
+          onResult={handleQrScan}
+          onError={handleError}
+          style={{ width: '100%' }}
+        />
+      </div>
+
+      {productDetails && (
+        <DisplayProductData data={productDetails} />
+      )}
     </div>
   );
 };
