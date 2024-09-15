@@ -1,16 +1,14 @@
-const hre = require("hardhat");
 async function main() {
-  const [deployer] = await hre.ethers.getSigners();
-  console.log(deployer)
-  console.log(`Deploying from account: ${deployer.address}`);
+  // Get the contract factory
+  const ProductTraceabilityMerkle = await ethers.getContractFactory("ProductTraceabilityMerkle");
 
+  // Deploy the contract
+  const productTraceabilityMerkle = await ProductTraceabilityMerkle.deploy();
 
-  const ProductRegistration = await hre.ethers.getContractFactory('ProductRegistration');
-  const productRegistration = await ProductRegistration.deploy();
-  await productRegistration.waitForDeployment()
-  const productRegistrationAddress = await productRegistration.getAddress()
-  console.log(` ProductRegistration deployed to address: ${productRegistrationAddress}`);
-  
+  // Wait for it to be mined
+  await productTraceabilityMerkle.deployed();
+
+  console.log("ProductTraceabilityMerkle deployed to:", productTraceabilityMerkle.address);
 }
 
 main()
