@@ -12,6 +12,7 @@ import { z, string } from 'zod';
 import { useForm } from 'react-hook-form';
 import Web3 from 'web3';
 import { supabase } from '../../utils/supabaseClient'; // Supabase client
+import jsQR from "jsqr"; // For QR Code parsing
 
 const productSchema = z.object({
   product_code: string().length(13, { message: 'Product Code must be exactly 13 digits' }),
@@ -30,7 +31,7 @@ const ProductRegistrationInteraction = () => {
   const [productDetails, setProductDetails] = useState(null); // For searched product details
   const [loading, setLoading] = useState(false); // Loading state for async tasks
 
-  const { register, handleSubmit, formState, setValue } = useForm({
+  const { register, handleSubmit, formState, setValue, getValues } = useForm({
     resolver: zodResolver(productSchema),
   });
   const { errors } = formState;
@@ -61,19 +62,33 @@ const ProductRegistrationInteraction = () => {
     const reader = new FileReader();
     reader.onload = async (event) => {
       try {
-        const qrData = event.target.result; // Assuming the QR contains JSON data with contract address
-        const jsonData = JSON.parse(qrData);
-        const { contractAddress } = jsonData;
+        const imageData = event.target.result;
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        const image = new Image();
+        image.src = imageData;
 
-        setQrData(contractAddress);
-        toast('QR code loaded and contract address extracted', { duration: 4000 });
-        validateContractWithBlockchain(contractAddress); // Validate the contract
+        image.onload = () => {
+          canvas.width = image.width;
+          canvas.height = image.height;
+          ctx.drawImage(image, 0, 0);
+          const qrCode = jsQR(ctx.getImageData(0, 0, canvas.width, canvas.height).data, canvas.width, canvas.height);
+          if (qrCode) {
+            const jsonData = JSON.parse(qrCode.data);
+            const { contractAddress } = jsonData;
+            setQrData(contractAddress);
+            toast('QR code loaded and contract address extracted', { duration: 4000 });
+            validateContractWithBlockchain(contractAddress);
+          } else {
+            toast('QR code not detected', { duration: 4000 });
+          }
+        };
       } catch (error) {
         console.error('Error reading QR code:', error);
         toast('Failed to read QR code', { duration: 4000 });
       }
     };
-    reader.readAsText(file);
+    reader.readAsDataURL(file);
   };
 
   // Validate contract and send transaction to blockchain
@@ -86,7 +101,7 @@ const ProductRegistrationInteraction = () => {
     try {
       const transactionParams = {
         from: connectedAccount,
-        to: contractAddress, // Assuming the contractAddress is from the QR code
+        to: contractAddress,
         value: web3.utils.toWei('0.01', 'ether'), // Gas fee
         data: contract.methods.validateContract().encodeABI(), // Assuming validateContract() is the function
       };
@@ -99,7 +114,6 @@ const ProductRegistrationInteraction = () => {
       setTxHash(tx);
       toast('Transaction sent. Waiting for confirmation...', { duration: 4000 });
       
-      // Wait for 5 seconds before retrieving the details
       setTimeout(async () => {
         retrieveProductDetails(tx);
       }, 5000);
@@ -186,51 +200,33 @@ const ProductRegistrationInteraction = () => {
 
             <div className="space-y-1 font-jakarta">
               <Label className='flex flex-col gap-3' htmlFor="raw-materials">Raw Materials
-                <Input className='font-light' {...register('raw_materials')} placeholder="Enter raw materials" />
+                <Input className='font-light' {...register('raw_materials')} placeholder="Enter raw materials used" />
                 <div className='text-red-500'>{errors.raw_materials?.message}</div>
               </Label>
             </div>
 
             <div className="space-y-1 font-jakarta">
-              <Label className='flex flex-col gap-3' htmlFor="qr-code-upload">Upload QR Code
-                <Input type="file" className='font-light' accept="image/*" onChange={(e) => handleQrCodeUpload(e.target.files[0])} />
+              <Label className='flex flex-col gap-3' htmlFor="qr-upload">Upload QR Code
+                <Input type="file" accept="image/*" onChange={(e) => handleQrCodeUpload(e.target.files[0])} />
               </Label>
             </div>
 
-            <Button type='submit' className='font-jakarta'>Register Product</Button>
+            <div className="space-y-1 font-jakarta">
+              <Label className='flex flex-col gap-3' htmlFor="contract-address">Contract Address (if QR code not used)
+                <Input className='font-light' {...register('contractAddress')} placeholder="Enter contract address" />
+                <div className='text-red-500'>{errors.contractAddress?.message}</div>
+              </Label>
+            </div>
           </CardContent>
 
           <CardFooter>
-            <DisplayProductData />
+            <Button type="submit" className='w-full'>Submit</Button>
           </CardFooter>
         </Card>
-
-        {/* Product Search */}
-        <div className="w-full max-w-4xl mt-8">
-          <div className="flex justify-between items-center">
-            <Label className='font-jakarta'>Search by Product Code</Label>
-            <div className="flex w-full max-w-md">
-              <Input
-                className='font-light'
-                placeholder="Enter product code to search"
-                onKeyDown={(e) => e.key === 'Enter' && handleSearchProduct(e.target.value)}
-              />
-              <Button onClick={() => handleSearchProduct(getValues('product_code'))} className="ml-2">Search</Button>
-            </div>
-          </div>
-
-          {loading && <p>Loading...</p>}
-          {productDetails && (
-            <div className="mt-4">
-              <h3>Product Details:</h3>
-              <p>Product Code: {productDetails.product_code}</p>
-              <p>Product Name: {productDetails.product_name}</p>
-              <p>Raw Materials: {productDetails.raw_materials}</p>
-              <p>Additional Blockchain Data: {productDetails.blockchain_data}</p>
-            </div>
-          )}
-        </div>
       </form>
+
+      {loading && <p className="mt-4">Loading...</p>}
+      {productDetails && <DisplayProductData productDetails={productDetails} />}
     </div>
   );
 };
