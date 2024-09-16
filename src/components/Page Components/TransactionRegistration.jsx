@@ -169,7 +169,7 @@ const TransactionRegistrationInteraction = () => {
       </CardContent>
 
       <CardFooter>
-        <Button className='font-jakarta' onClick={findBatchesByCode}>Search TX</Button>
+        <Button className='font-jakarta' style={{ backgroundColor: 'green'}} onClick={findBatchesByCode}>Search TX</Button>
       </CardFooter>
 
       <CardContent className='font-jakarta text-lg'>
@@ -198,15 +198,15 @@ const TransactionRegistrationInteraction = () => {
           />
         </div>
 
-        <Button className='mt-6' onClick={updateTransaction}>
+        <Button className='mt-6' style={{ backgroundColor: 'green'}} onClick={updateTransaction}>
           Transfer Batches
         </Button>
 
-        <Button className='mt-6 ml-4' onClick={getAllTransactions}>
+        <Button className='mt-6 ml-4' style={{ backgroundColor: 'green'}} onClick={getAllTransactions}>
           Fetch Transactions
         </Button>
 
-        <Button className='ml-8' onClick={traceRoute}>Trace Product</Button>
+        <Button className='ml-8' style={{ backgroundColor: 'green'}} onClick={traceRoute}>Trace Product</Button>
       </CardContent>
 
       <CardContent className='overflow-scroll'>

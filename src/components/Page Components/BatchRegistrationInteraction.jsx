@@ -156,7 +156,7 @@ const BatchRegistrationInteraction = () => {
             <h2 className='text-xl'>Search for a product to add</h2>
             <Label className='flex flex-col gap-2' htmlFor="product-code">Product Code</Label>
             <Input id="product-code" value={productCode} placeholder="Product code (13 bit)" onChange={(e) => setProductCode(e.target.value)} />
-            <Button className='text-md w-[6rem] h-[2.5rem]' type="button" onClick={findProductsByCode}>Search</Button>
+            <Button className='text-md w-[6rem] h-[2.5rem]' type="button" style={{ backgroundColor: 'green'}} onClick={findProductsByCode}>Search</Button>
           </div>
 
           {productDetails && (
@@ -185,8 +185,8 @@ const BatchRegistrationInteraction = () => {
         </CardContent>
 
         <CardFooter>
-          <Button type="submit" className='font-jakarta'>Add Batch</Button>
-          <Button type="button" onClick={retrieveAllBatches} className='ml-8 font-jakarta'>Fetch Batches</Button>
+          <Button type="submit" style={{ backgroundColor: 'green'}} className='font-jakarta'>Add Batch</Button>
+          <Button type="button" style={{ backgroundColor: 'green'}} onClick={retrieveAllBatches} className='ml-8 font-jakarta'>Fetch Batches</Button>
         </CardFooter>
 
         <CardContent>

@@ -171,7 +171,7 @@ const ProductRegistrationInteraction = () => {
   return (
     <div className="w-full flex flex-col items-center justify-center py-8 px-4" style={{ zoom: '1.0' }}>
       <div className="mb-4">
-        <Button onClick={connectWallet}>
+        <Button style={{ backgroundColor: 'green', color: 'white' }} onClick={connectWallet}>
           {account ? `Wallet Connected: ${account}` : 'Connect Wallet'}
         </Button>
       </div>
@@ -227,7 +227,7 @@ const ProductRegistrationInteraction = () => {
           </CardContent>
 
           <CardFooter className="flex justify-end">
-            <Button type="submit" className="bg-black font-medium text-white w-full">
+            <Button type="submit" style={{ backgroundColor: 'green', color: 'white' }} className=" font-medium w-full">
               Submit Product Details
             </Button>
           </CardFooter>
