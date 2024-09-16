@@ -11,32 +11,18 @@ import { ArrowDownIcon, CrossCircledIcon, CheckCircledIcon } from '@radix-ui/rea
 import { Label } from "../../../components/ui/label";
 import { useAuthStore, useProductStore, useContractStore, useTransactionRegistrationStore } from '../../services/store';
 import { CustomSelect } from '../../Reusables/index';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z, string } from 'zod';
 import { useForm } from 'react-hook-form';
 import { supabase } from '../../utils/supabaseClient';
 
 const TransactionRegistrationInteraction = () => {
   const { user } = useAuthStore();
-  const { web3, account } = useContractStore();
+  const { web3, account, owner, setOwner } = useContractStore();
   const { batches } = useProductStore();
   const {
-    targetAddress,
-    receiver,
-    batchCode,
-    status,
-    totalTransactions,
-    filteredTransactions,
-    txHash,
-    previousTxHash,
-    setTargetAddress,
-    setReceiver,
-    setBatchCode,
-    setStatus,
-    setTotalTransactions,
-    setTxHash,
-    setPreviousTXHash,
-    setFilteredTransactions
+    targetAddress, receiver, batchCode, status, totalTransactions,
+    filteredTransactions, txHash, previousTxHash, invalidAddress,
+    setTargetAddress, setReceiver, setBatchCode, setStatus, setTotalTransactions,
+    setTxHash, setPreviousTxHash, setFilteredTransactions
   } = useTransactionRegistrationStore();
 
   const industryOptions = [
@@ -44,22 +30,22 @@ const TransactionRegistrationInteraction = () => {
     { value: 'Maroon Logistics', label: 'Maroon Logistics' },
     { value: 'Wakanda Inc', label: 'Wakanda Inc' },
     { value: 'Dede Distribution', label: 'Dede Distribution' },
-    { value: 'Musak Ventures', label: 'Musak Ventures' },
+    { value: 'Musak Ventures', label: 'Musak Ventures' }
   ];
 
-  const { register, control, getValues, formState, handleSubmit } = useForm({});
+  const { register, control, getValues, formState, handleSubmit } = useForm();
 
-  
+  // Function to find batch details using Supabase and blockchain
   const findBatchesByCode = async () => {
     try {
-      
-      const { data: batch, error } = await supabase
+      // First, query Supabase for the batch
+      const { data: batchData, error: supabaseError } = await supabase
         .from('batches')
         .select('*')
         .eq('batch_code', batchCode);
 
-      if (error || !batch.length) {
-        toast(`Batch Not Found in Supabase.`, {
+      if (supabaseError || !batchData.length) {
+        toast('Batch not found in Supabase. Please input a valid code.', {
           className: 'font-mono text-lg h-[4rem]',
           duration: 3000,
           icon: <CrossCircledIcon />
@@ -67,24 +53,23 @@ const TransactionRegistrationInteraction = () => {
         return;
       }
 
-      const contractObj = batch[0];
-      const targetAddress = contractObj.batchManager;
+      // Set batch details if found
+      const targetAddress = batchData[0]?.batchManager;
+      setTargetAddress(targetAddress);
 
-      if (contractObj) {
-        const contract = new web3.eth.Contract(ContractABI, targetAddress);
-        const TUCAddress = await contract.methods.getTUCAddressForBatch(batchCode).call();
+      // Check blockchain for the TUC address using the contract ABI
+      const contract = new web3.eth.Contract(ContractABI, targetAddress);
+      const TUCAddress = await contract.methods.getTUCAddressForBatch(batchCode).call();
 
-        toast(`Batch Found with address ${targetAddress}`, {
-          className: 'font-mono text-lg h-[4rem]',
-          duration: 3000,
-          icon: <CheckCircledIcon />
-        });
+      toast(`Batch Found. TUC Address: ${TUCAddress}`, {
+        className: 'font-mono text-lg h-[4rem]',
+        duration: 3000,
+        icon: <CheckCircledIcon />
+      });
 
-        setTargetAddress(TUCAddress);
-      }
     } catch (error) {
-      console.error('Error searching batch:', error);
-      toast('Error occurred while searching for batch', {
+      console.error('Error fetching batch details:', error);
+      toast('Batch not found. Please input a valid code.', {
         className: 'font-mono text-lg h-[4rem]',
         duration: 3000,
         icon: <CrossCircledIcon />
@@ -92,33 +77,42 @@ const TransactionRegistrationInteraction = () => {
     }
   };
 
-  
+  // Function to update transaction and transfer batches
   const updateTransaction = async () => {
-    const transactionContract = new web3.eth.Contract(transactionABI, targetAddress);
+    try {
+      const { user_metadata } = user;
+      const transactionContract = new web3.eth.Contract(transactionABI, targetAddress);
 
-    const prevTXHashCheck = previousTxHash.startsWith('0x') ? previousTxHash : previousTxHash;
-    const data = await transactionContract.methods
-      .transferCustodyString(receiver, '', prevTXHashCheck)
-      .encodeABI();
+      // Check if the user is authorized
+      const owner = await transactionContract.methods.owner().call();
+      if (user_metadata.contract_address !== owner) {
+        toast.error('You are not authorized to initialize this transaction', {
+          className: 'font-mono text-lg h-[4rem]',
+          duration: 2000,
+          icon: <CrossCircledIcon />
+        });
+        return;
+      }
 
-    const params = [
-      {
+      // Prepare the transaction data
+      const data = transactionContract.methods.transferCustodyString(receiver, '', previousTxHash).encodeABI();
+      const params = [{
         from: account[0],
         to: targetAddress,
-        data: data,
-      }
-    ];
+        data
+      }];
 
-    try {
       const result = await window.ethereum.request({ method: 'eth_sendTransaction', params });
       setTxHash(result);
+
       toast('Transaction Updated Successfully', {
         className: 'font-mono text-lg h-[4rem]',
         duration: 2000,
         icon: <CheckCircledIcon />
       });
+
     } catch (error) {
-      console.error('Error during transaction:', error);
+      console.error('Transaction update error:', error);
       toast('Transaction Update Failed', {
         className: 'font-mono text-lg h-[4rem]',
         duration: 2000,
@@ -127,14 +121,18 @@ const TransactionRegistrationInteraction = () => {
     }
   };
 
-  
+  // Fetch all transactions for the batch
   const getAllTransactions = async () => {
-    const transactionContract = new web3.eth.Contract(transactionABI, targetAddress);
-    const transactionArray = await transactionContract.methods.getAllTransactions().call();
-    setTotalTransactions(transactionArray);
+    try {
+      const transactionContract = new web3.eth.Contract(transactionABI, targetAddress);
+      const transactionArray = await transactionContract.methods.getAllTransactions().call();
+      setTotalTransactions(transactionArray);
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
+    }
   };
 
-  
+  // Trace route for transactions
   const traceRoute = filteredTransactions?.map((item, i) => (
     <span key={i} className='flex flex-col mt-2 items-center justify-center gap-2'>
       <p>From {item.sender}</p>
@@ -150,16 +148,23 @@ const TransactionRegistrationInteraction = () => {
   }, [batches]);
 
   return (
-    <Card style={{ zoom: '0.71' }}>
+    <Card style={{ zoom: '0.715' }}>
       <CardHeader>
         <CardTitle className='font-spaceGrotesk text-2xl'>Update Transaction</CardTitle>
-        <CardDescription>Make changes to your account here. Click save when you're done.</CardDescription>
+        <CardDescription className='font-spaceGrotesk'>
+          Make changes to your account here. Click save when you're done.
+        </CardDescription>
       </CardHeader>
 
       <CardContent className="space-y-2 font-jakarta">
         <div className="space-y-1">
           <Label htmlFor="batch-number">Batch Code</Label>
-          <Input id="batch-number" placeholder='672132...' value={batchCode} onChange={(e) => setBatchCode(e.target.value)} />
+          <Input
+            id="batch-number"
+            placeholder='Enter Batch Code'
+            value={batchCode}
+            onChange={(e) => { setBatchCode(e.target.value); }}
+          />
         </div>
       </CardContent>
 
@@ -171,10 +176,17 @@ const TransactionRegistrationInteraction = () => {
         <CardDescription className='h-[4rem] text-xl'>
           <h3>Update Transactions</h3>
         </CardDescription>
+
         <div className="space-y-1">
-          <Label htmlFor="prev-tx">Prev TX Hash</Label>
-          <Input id="prev-tx" placeholder='Input the previous TX hash' value={previousTxHash} onChange={(e) => setPreviousTXHash(e.target.value)} />
+          <Label htmlFor="prev-tx">Previous TX Hash</Label>
+          <Input
+            id="prev-tx"
+            placeholder='Input the previous transaction hash'
+            value={previousTxHash}
+            onChange={(e) => { setPreviousTxHash(e.target.value); }}
+          />
         </div>
+
         <div className="space-y-1">
           <Label htmlFor="receiver">Receiver</Label>
           <CustomSelect
@@ -182,11 +194,19 @@ const TransactionRegistrationInteraction = () => {
             control={control}
             className=''
             options={industryOptions}
-            placeholder="Select the receiver"
+            placeholder="Please select the user you want to send to"
           />
         </div>
-        <Button className='mt-6' onClick={updateTransaction}>Transfer Batches</Button>
-        <Button className='mt-6 ml-4' onClick={getAllTransactions}>Fetch Transactions</Button>
+
+        <Button className='mt-6' onClick={updateTransaction}>
+          Transfer Batches
+        </Button>
+
+        <Button className='mt-6 ml-4' onClick={getAllTransactions}>
+          Fetch Transactions
+        </Button>
+
+        <Button className='ml-8' onClick={traceRoute}>Trace Product</Button>
       </CardContent>
 
       <CardContent className='overflow-scroll'>
