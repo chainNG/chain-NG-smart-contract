@@ -1,7 +1,12 @@
 import React from 'react'
 import { Button } from "../../components/ui/button"
 import { Web3 } from 'web3'
-
+import Chart from '../components/Chart';
+import FeaturedInfo from '../components/FeaturedInfo'
+import '../css/page/home.css'
+import { userData } from "../dummyData";
+import WidgetSm from '../components/WidgetSm';
+import WidgetLg from '../components/WidgetLg';
 import { Tabs, TabsContent, TabsList, TabsTrigger, } from "../../components/ui/tabs"
 import { CustomAvatar, BatchRegistrationInteraction, ProductRegistrationInteraction, TransactionRegistration } from '../components/index'
 
@@ -29,6 +34,12 @@ const Home = () => {
           <TransactionRegistration />
         </TabsContent>
       </Tabs>
+      <FeaturedInfo />
+      <Chart data={userData} title="User Analytics" grid dataKey="Active User"/>
+      <div className="homeWidgets">
+        <WidgetSm/>
+        <WidgetLg/>
+      </div>
     </div>
   )
 }

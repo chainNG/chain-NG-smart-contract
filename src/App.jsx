@@ -6,6 +6,15 @@ import { Home,
         Signup, 
         Analytics } from './pages/index'
 import {Routes,Route} from 'react-router-dom'
+import Sidebar from './components/Sidebar'
+import Topbar from "./components/Topbar";
+import UserList from "./pages/UserList";
+import User from "./pages/User";
+import NewUser from "./pages/NewUser";
+import ProductList from "./pages/ProductList";
+import Product from "./pages/Product";
+import NewProduct from "./pages/NewProduct";
+
 function App() {
 
 
@@ -20,6 +29,13 @@ function App() {
         <Route path='/signup' element={ <Signup/>}/>
          <Route path='/analytics' element={<Analytics/>}/>
 
+         <Route path="/" element={<Home />} />
+          <Route path="/users" element={<UserList />} />
+          <Route path="/user/:userId" element={<User />} />
+          <Route path="/newUser" element={<NewUser />} />
+          <Route path="/products" element={<ProductList />} />
+          <Route path="/product/:productId" element={<Product />} />
+          <Route path="/newproduct" element={<NewProduct />} />
         </Routes>
      </div>
   
