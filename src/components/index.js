@@ -7,3 +7,4 @@ export { default as TransactionRegistration } from './Page Components/Transactio
 export {default as TraceProducts} from './Render Components/TraceProducts.jsx'
 // some weird way of exporting jsx code, i fuckin hate this 
 export {default as CustomAvatar} from '../Reusables/CustomAvatar.jsx'
+export {default as Dashboard} from '../components/Page Components/DashboardMain.jsx'

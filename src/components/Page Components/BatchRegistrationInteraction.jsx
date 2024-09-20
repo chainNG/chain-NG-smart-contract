@@ -142,7 +142,7 @@ const BatchRegistrationInteraction = () => {
   }, [account, txHash]);
 
   return (
-    <form onSubmit={handleSubmit(addBatch)} style={{ zoom: '0.71' }}>
+    <form onSubmit={handleSubmit(addBatch)} style={{ zoom: '0.91' }}>
       <Card>
         <CardHeader>
           <CardTitle className='font-spaceGrotesk text-[1.8rem]'>Batch Registration</CardTitle>

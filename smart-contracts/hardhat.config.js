@@ -1,15 +1,36 @@
-require("@nomiclabs/hardhat-waffle");
-require("@nomiclabs/hardhat-etherscan");
+require("@nomicfoundation/hardhat-toolbox");
+require("@nomicfoundation/hardhat-verify"); 
+require('dotenv').config(); 
 
+/** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
-  solidity: "0.8.0",  // Ensure this matches your Solidity version
+  defaultNetwork: "sepolia",
   networks: {
+    hardhat: {},
     sepolia: {
-      url: `https://sepolia.infura.io/v3/5942bc7bb9274ba4a927c440f9697a7f`,
-      accounts: [``]  // Add your private key, preferably via an environment variable
+      url: `https://sepolia.infura.io/v3/${process.env.INFURA_API_KEY}`,  // Infura endpoint for Sepolia
+      accounts: [process.env.PRIVATE_KEY_1],  
     }
   },
+  solidity: {
+    version: "0.8.27",  
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 200
+      }
+    }
+  },
+  paths: {
+    sources: "./contracts",
+    tests: "./test",
+    cache: "./cache",
+    artifacts: "./artifacts"
+  },
   etherscan: {
-    apiKey: "YOUR_POLYGONSCAN_API_KEY"  // Optional, for verifying the contract on Polygonscan
+    apiKey: process.env.ETHERSCAN_API_KEY  
+  },
+  mocha: {
+    timeout: 40000  // Mocha timeout setting
   }
 };

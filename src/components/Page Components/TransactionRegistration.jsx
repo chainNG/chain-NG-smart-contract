@@ -148,7 +148,7 @@ const TransactionRegistrationInteraction = () => {
   }, [batches]);
 
   return (
-    <Card style={{ zoom: '0.715' }}>
+    <Card style={{ zoom: '0.95' }}>
       <CardHeader>
         <CardTitle className='font-spaceGrotesk text-2xl'>Update Transaction</CardTitle>
         <CardDescription className='font-spaceGrotesk'>
