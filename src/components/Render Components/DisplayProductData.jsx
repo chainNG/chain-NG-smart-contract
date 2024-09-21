@@ -1,45 +1,38 @@
-import React from 'react'
-import useProductStore from '../../services/store/useProductStore'
+import React from 'react';
 
-import { Table, TableHeader, TableBody, TableFooter, TableHead, TableRow, TableCell, TableCaption, } from '../../../components/ui/table'
-import { formatDate } from '../../services/formatDate'
-const DisplayProductData = () => {
-  const { products,transactionStats } = useProductStore()
-  const productTable= products.map((product,i)=>{
-    
-    return (
-      <TableRow key={i}>
-        <TableCell>{i+1}</TableCell>
-        <TableCell>{product.productName}</TableCell>
-        <TableCell>{product.productCode.toString()}</TableCell>
-        <TableCell>{product.rawMaterials}</TableCell>
-        <TableCell>{product.owner}</TableCell>
-        <TableCell>{product.bacAddress}</TableCell>
-        <TableCell>{formatDate(product.registrationTime.toString())}</TableCell>
-      </TableRow>
-    )
-   })
+const DisplayProductData = ({ products }) => {
+  if (!products.length) {
+    return <div>No products to display</div>;
+  }
+
   return (
-    <div className='w-full h-[15rem] font-jakarta overflow-y-scroll '>
-      <Table >
-        <TableCaption className='text-lg'>Registered Products and Materials</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead>     S/N</TableHead>
-            <TableHead>   Name</TableHead>
-            <TableHead>  Product Code</TableHead>
-            <TableHead> Materials</TableHead>
-            <TableHead>    Owner</TableHead>
-            <TableHead>    BAC Address</TableHead>
-            <TableHead>    TimeStamp</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-       {products === undefined || products.length === 0 ? <div> No Products Registered </div>: productTable}
-        </TableBody>
-      </Table>
+    <div className="mt-4 w-full">
+      <table className="min-w-full bg-white">
+        <thead>
+          <tr>
+            <th className="py-2 px-4 border-b-2 border-gray-300">S/N</th>
+            <th className="py-2 px-4 border-b-2 border-gray-300">Product Name</th>
+            <th className="py-2 px-4 border-b-2 border-gray-300">Product Code</th>
+            <th className="py-2 px-4 border-b-2 border-gray-300">Raw Materials</th>
+            <th className="py-2 px-4 border-b-2 border-gray-300">Address</th>
+            <th className="py-2 px-4 border-b-2 border-gray-300">QR Hash</th>
+          </tr>
+        </thead>
+        <tbody>
+          {products.map((product, index) => (
+            <tr key={product.id}>
+              <td className="py-2 px-4 border-b">{index + 1}</td>
+              <td className="py-2 px-4 border-b">{product.product_name}</td>
+              <td className="py-2 px-4 border-b">{product.product_code}</td>
+              <td className="py-2 px-4 border-b">{product.raw_materials}</td>
+              <td className="py-2 px-4 border-b">{product.address}</td>
+              <td className="py-2 px-4 border-b">{product.qr_hash}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
-  )
-}
+  );
+};
 
-export default DisplayProductData
+export default DisplayProductData;

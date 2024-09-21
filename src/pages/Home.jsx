@@ -43,6 +43,19 @@ const HomePage = () => {
         </div>
       </div>
 
+{/* Welcome User Section */}
+<div className="dashboard w-full mt-6">
+        <div className="dashboard-properties">
+          <h2 className="text-2xl font-bold">Hello, Gidwan Kwano Farm</h2>
+          {/* Adjust the grid system to prevent overflow */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+            <div className="property-card p-4 bg-white shadow-md rounded-md">Total Products: 10</div>
+            <div className="property-card p-4 bg-white shadow-md rounded-md">Total Batches: 5</div>
+            <div className="property-card p-4 bg-white shadow-md rounded-md">Total Transactions: 2</div>
+          </div>
+        </div>
+      </div>
+      
       {/* Welcome User Section */}
       <div className="dashboard w-full mt-6">
         <div className="dashboard-properties">
