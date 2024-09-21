@@ -1,12 +1,17 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 import svgr from "vite-plugin-svgr";
 
 export default defineConfig({
   plugins: [react(), svgr()],
-  build: {
-    rollupOptions: {
-      external: ['slick-carousel'], // Keep only slick-carousel as external
+  resolve: {
+    alias: {
+      '@mui/icons-material': '@mui/icons-material/esm/index.js',
     },
   },
-})
+  build: {
+    rollupOptions: {
+      external: ['slick-carousel'], 
+    },
+  },
+});
