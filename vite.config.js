@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react(), svgr()],
   build: {
     rollupOptions: {
-      external: ['slick-carousel'], ["@mui/icons-material"],
+      external: ['slick-carousel'], // Keep only slick-carousel as external
     },
   },
 })
