@@ -8,7 +8,7 @@ const { account, web3, contract, setContract, setAccount, setWeb3 } = useContrac
 
 
 export const connectWallet = async () => {
-    const contractAddress = '0x557337b04e00A03d4abB1AaEae5aF91cAb4B833B'; // Replace with your contract address'
+    const contractAddress = '0xc879e564d5c5270e58ee640dca1b01789ec7bc24'; // Replace with your contract address'
     const alchemyUrl = 'https://polygon-mumbai.g.alchemy.com/v2/bE6pdrk27bZW93aL3QUr9v_93SCiINit'
     const contractAbi = contractABI
   

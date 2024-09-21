@@ -1,57 +1,44 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from "../../../components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, } from "../../../components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../../components/ui/card";
 import DisplayBatchData from '../Render Components/DisplayBatchData';
 import { Input } from "../../../components/ui/input";
-import ContractABI from '../../services/ABIs/batchRegistration.json';
 import { toast } from 'sonner';
-import useContractStore from '../../services/store/useContractStore';
-import useProductStore from '../../services/store/useProductStore';
 import { Label } from "../../../components/ui/label";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z, string } from 'zod';
 import { CrossCircledIcon, CheckCircledIcon } from '@radix-ui/react-icons';
 import { useForm } from 'react-hook-form';
 import { supabase } from '../../utils/supabaseClient';
+import useContractStore from '../../services/store/useContractStore';
 
 const BatchRegistrationInteraction = () => {
-  const invalidAddress = '0x0000000000000000000000000000000000000000';
-  const { batchAddresses, batches, setBatches } = useProductStore();
-  const { web3, account, contract } = useContractStore();
-  const [productCode, setProductCode] = useState(null);
-  const [batchCode, setBatchCode] = useState(null);
-  const [batchCount, setBatchCount] = useState(null);
-  const [rawMaterialsUsed, setRawMaterialsUsed] = useState(null);
-  const [batchAddress, setBatchAddress] = useState(null);
+  const { account } = useContractStore();
+  const [productCode, setProductCode] = useState('');
   const [totalBatches, setTotalBatches] = useState([]);
-  const [batchContract, setBatchContract] = useState(null);
-  const [txHash, setTxHash] = useState(null);
-  const [status, setStatus] = useState(null);
-  const [productDetails, setProductDetails] = useState(null);
-
-  const batchSchema = z.object({
-    product_code: string().length(13, 'Product Code must be exactly 13 digits').startsWith('6'),
-    batch_code: string().length(13, 'Batch Code must be exactly 13 digits').startsWith('1'),
-    batch_count: string().min(1),
-    raw_materials_used: string().min(3, { message: 'Raw Material must be at least 3 characters' })
-  });
-
-  const { register, getValues, formState, handleSubmit } = useForm({
-    resolver: zodResolver(batchSchema)
+  const { register, handleSubmit, formState, reset, setValue } = useForm({
+    resolver: zodResolver(z.object({
+      product_code: string().length(13, 'Product Code must be exactly 13 digits').startsWith('6'),
+      batch_code: string().length(13, 'Batch Code must be exactly 13 digits').startsWith('1'),
+      batch_amount: string().min(1, { message: 'Batch amount must be provided' }),
+      raw_materials_used: string().min(3, { message: 'Raw materials must be at least 3 characters' }),
+      manager_role: string().nonempty({ message: 'Manager role must be selected' }),
+    })),
   });
 
   const { errors } = formState;
 
-  
-  const findProductsByCode = async () => {
+  // Function to find product details based on product code
+  const findProductDetails = async () => {
     try {
       const { data: product, error } = await supabase
         .from('products')
         .select('*')
-        .eq('product_code', productCode);
+        .eq('product_code', productCode)
+        .single();
 
-      if (error || !product.length) {
-        toast(`Product not found. Please input a valid product code.`, {
+      if (error || !product) {
+        toast(`No product found for the code: ${productCode}`, {
           className: 'font-mono text-lg h-[4rem]',
           duration: 3000,
           icon: <CrossCircledIcon />
@@ -59,23 +46,16 @@ const BatchRegistrationInteraction = () => {
         return;
       }
 
-      setProductDetails(product[0]);
-      const targetAddress = await contract.methods.getBACAddressForProduct(productCode).call();
-      setBatchAddress(targetAddress);
-
-      if (targetAddress !== invalidAddress) {
-        toast(`Product Found with blockchain address: ${targetAddress}`, {
-          className: 'font-mono text-lg h-[4rem]',
-          duration: 3000,
-          icon: <CheckCircledIcon />
-        });
-      } else {
-        toast(`Blockchain Address Not Found.`, {
-          className: 'font-mono text-lg h-[4rem]',
-          duration: 3000,
-          icon: <CrossCircledIcon />
-        });
-      }
+      // Automatically fill form fields with product details
+      setValue('batch_code', product.batch_code || '');
+      setValue('batch_amount', product.batch_amount || '');
+      setValue('raw_materials_used', product.raw_materials || '');
+      setValue('manager_role', product.manager_role || ''); // Default role if available
+      toast(`Product found for code: ${productCode}`, {
+        className: 'font-mono text-lg h-[4rem]',
+        duration: 3000,
+        icon: <CheckCircledIcon />
+      });
     } catch (error) {
       console.error('Error fetching product data:', error);
       toast('Error occurred while fetching product details', {
@@ -86,36 +66,36 @@ const BatchRegistrationInteraction = () => {
     }
   };
 
+  // Function to add a new batch
   const addBatch = async (data) => {
-    if (!batchAddress || batchAddress === invalidAddress) {
-      toast('Invalid batch address. Please search for the product first.', {
-        className: 'font-mono text-lg h-[4rem]',
-        duration: 4000,
-        icon: <CrossCircledIcon />
-      });
-      return;
-    }
-
-    const batchABI = ContractABI;
-    const batchContract = new web3.eth.Contract(batchABI, batchAddress);
-    const contractData = await batchContract.methods.addBatch(data.batch_code, data.batch_count, data.raw_materials_used).encodeABI();
-    const params = [{
-      from: account[0],
-      to: batchAddress,
-      data: contractData,
-    }];
+    const { batch_code, batch_amount, raw_materials_used, manager_role } = data;
+    const tucAddress = account[0];
 
     try {
-      const result = await window.ethereum.request({ method: 'eth_sendTransaction', params });
-      setTxHash(result);
+      const { error } = await supabase.from('batches').insert([
+        {
+          product_code: productCode,
+          batch_code,
+          batch_amount,
+          raw_materials: raw_materials_used,
+          manager_role,
+          tuc_address: tucAddress,
+        },
+      ]);
+
+      if (error) throw error;
+
       toast('Batch successfully added', {
         className: 'font-mono text-lg h-[4rem]',
         duration: 4000,
         icon: <CheckCircledIcon />
       });
+
+      reset(); // Reset form fields
+      retrieveAllBatches(); // Fetch updated batches after adding a new one
     } catch (error) {
       console.error('Error adding batch:', error);
-      toast('Error adding batch to the blockchain.', {
+      toast('Error adding batch to the database.', {
         className: 'font-mono text-lg h-[4rem]',
         duration: 4000,
         icon: <CrossCircledIcon />
@@ -123,23 +103,26 @@ const BatchRegistrationInteraction = () => {
     }
   };
 
+  // Function to retrieve all batches
   const retrieveAllBatches = async () => {
-    const totalBatchesArray = [];
-    for (const address of batchAddresses) {
-      const batchContract = new web3.eth.Contract(ContractABI, address);
-      const batchesArray = await batchContract.methods.getAllBatches().call();
-      totalBatchesArray.push(batchesArray);
+    try {
+      const { data: batches, error } = await supabase.from('batches').select('*');
+      if (error) throw error;
+
+      setTotalBatches(batches);
+    } catch (error) {
+      console.error('Error fetching batches:', error);
+      toast('Error fetching batch records.', {
+        className: 'font-mono text-lg h-[4rem]',
+        duration: 4000,
+        icon: <CrossCircledIcon />
+      });
     }
-    const flattenedBatches = [].concat(...totalBatchesArray).filter(item => typeof item === 'object');
-    setTotalBatches(flattenedBatches);
-    setBatches(flattenedBatches);
   };
 
   useEffect(() => {
-    if (contract) {
-      retrieveAllBatches();
-    }
-  }, [account, txHash]);
+    retrieveAllBatches(); // Fetch initial batch records on mount
+  }, []);
 
   return (
     <form onSubmit={handleSubmit(addBatch)} style={{ zoom: '0.91' }}>
@@ -152,41 +135,45 @@ const BatchRegistrationInteraction = () => {
         </CardHeader>
 
         <CardContent className="space-y-2 font-jakarta">
-          <div className="space-y-1 mb-[2rem] flex  h-[8rem] items-start justify-center w-full flex-col gap-2">
+          <div className="space-y-1 mb-[2rem] flex h-[8rem] items-start justify-center w-full flex-col gap-2">
             <h2 className='text-xl'>Search for a product to add</h2>
             <Label className='flex flex-col gap-2' htmlFor="product-code">Product Code</Label>
-            <Input id="product-code" value={productCode} placeholder="Product code (13 bit)" onChange={(e) => setProductCode(e.target.value)} />
-            <Button className='text-md w-[6rem] h-[2.5rem]' type="button" style={{ backgroundColor: 'green'}} onClick={findProductsByCode}>Search</Button>
+            <Input id="product-code" value={productCode} placeholder="Product code (13 digits)" onChange={(e) => setProductCode(e.target.value)} />
+            <Button className='text-md w-[6rem] h-[2.5rem]' type="button" style={{ backgroundColor: 'green' }} onClick={findProductDetails}>Search</Button>
           </div>
-
-          {productDetails && (
-            <div className="space-y-2">
-              <p>Product Name: {productDetails.product_name}</p>
-              <p>Owner: {productDetails.owner}</p>
-              <p>Blockchain Address: {batchAddress}</p>
-            </div>
-          )}
 
           <div className="space-y-1">
             <Label htmlFor="batch_code">Batch Code</Label>
-            <Input id="batch_code" {...register('batch_code')} placeholder="Batch code (13 bit)" />
+            <Input id="batch_code" {...register('batch_code')} placeholder="Batch code (13 digits)" />
             <div className='text-red-500'>{errors.batch_code?.message}</div>
           </div>
           <div className="space-y-1">
-            <Label htmlFor="batch-count">Batch Count</Label>
-            <Input id="batch-count" {...register('batch_count')} placeholder='100' />
-            <div className='text-red-500'>{errors.batch_count?.message}</div>
+            <Label htmlFor="batch_amount">Batch Amount</Label>
+            <Input id="batch_amount" {...register('batch_amount')} placeholder="Batch amount" />
+            <div className='text-red-500'>{errors.batch_amount?.message}</div>
           </div>
           <div className="space-y-1">
-            <Label htmlFor="raw-materials_used">Raw Materials Used</Label>
-            <Input id="raw-materials_used" {...register('raw_materials_used')} placeholder='Tea' />
+            <Label htmlFor="raw_materials_used">Raw Materials Used</Label>
+            <Input id="raw_materials_used" {...register('raw_materials_used')} placeholder='e.g. Tea, Sugar' />
             <div className='text-red-500'>{errors.raw_materials_used?.message}</div>
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor="manager_role">Manager Role</Label>
+            <div className="flex gap-4">
+              <label>
+                <input {...register('manager_role')} type="radio" value="owner" /> Owner
+              </label>
+              <label>
+                <input {...register('manager_role')} type="radio" value="consumer" /> Consumer
+              </label>
+            </div>
+            <div className='text-red-500'>{errors.manager_role?.message}</div>
           </div>
         </CardContent>
 
         <CardFooter>
-          <Button type="submit" style={{ backgroundColor: 'green'}} className='font-jakarta'>Add Batch</Button>
-          <Button type="button" style={{ backgroundColor: 'green'}} onClick={retrieveAllBatches} className='ml-8 font-jakarta'>Fetch Batches</Button>
+          <Button type="submit" style={{ backgroundColor: 'green' }} className='font-jakarta'>Add Batch</Button>
+          <Button type="button" style={{ backgroundColor: 'green' }} onClick={retrieveAllBatches} className='ml-8 font-jakarta'>Fetch Batches</Button>
         </CardFooter>
 
         <CardContent>
