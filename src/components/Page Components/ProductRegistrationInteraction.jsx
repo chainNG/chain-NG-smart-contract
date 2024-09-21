@@ -152,7 +152,7 @@ const ProductRegistrationInteraction = () => {
     setLoading(false);
   };
 
-  
+  // changes
   const onSubmit = async (data) => {
     if (qrMethod) {
       
