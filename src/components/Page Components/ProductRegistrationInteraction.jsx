@@ -129,6 +129,35 @@ const ProductRegistrationInteraction = () => {
     setLoading(false);
   };
 
+<<<<<<< HEAD
+=======
+  
+  const fetchProductDetailsFromSupabase = async (data) => {
+    setLoading(true);
+    try {
+      const { data: product, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('product_code', data.product_code)
+        .eq('product_name', data.product_name)
+        .eq('raw_materials', data.raw_materials);
+
+      if (error || !product.length) {
+        setErrorMessage('Product not found');
+        setProductDetails(null);
+      } else {
+        setProductDetails(product[0]);
+        toast('Product details retrieved', { duration: 4000 });
+      }
+    } catch (error) {
+      console.error('Error fetching product from Supabase:', error);
+      toast('Failed to retrieve product details', { duration: 4000 });
+    }
+    setLoading(false);
+  };
+
+  // changes
+>>>>>>> refs/remotes/origin/main
   const onSubmit = async (data) => {
     if (qrMethod) {
       toast('Using QR code data. Registration has been submitted directly.', { duration: 4000 });
